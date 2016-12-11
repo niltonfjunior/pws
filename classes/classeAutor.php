@@ -480,7 +480,8 @@ class Autor extends Diversa{
         $uri1 = $_SERVER['REQUEST_URI'];
 	    $uri1 = str_replace("/page/","/data/",$uri1);
         $uri2 = str_replace("/people/","/image/",$uri1);
-        $uri2 = str_replace($autor['nickAutor'],$autor['idAutor'].".jpg",$uri2);
+        $uri2 = str_replace($autor['nickAutor'],$autor['idAutor'],$uri2);
+        //$uri2 = str_replace($autor['nickAutor'],$autor['idAutor'].".jpg",$uri2);
         echo "<p><a href='$uri1' title='Obter RDF da pessoa'><img border='0' src='http://www.w3.org/RDF/icons/rdf_w3c_button.32' alt='RDF Resource Description Framework Icon' style='margin-right:40px;' /></a>";
         echo "<a href='$uri2' title='Obter RDF da imagem'><img border='0' src='http://www.w3.org/RDF/icons/rdf_w3c_button.32' alt='RDF Resource Description Framework Icon' /></a></p>";
 

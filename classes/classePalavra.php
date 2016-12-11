@@ -75,7 +75,8 @@ class Palavra extends Diversa{
                     }else{
                         echo $tupla[1];
                     }
-                    echo "</td><td><a href='".$this->buscaUriBase()."keyword/".$this->poeUnderline($tupla[1])."' target='_blank' />".$this->buscaUriBase()."keyword/".$this->poeUnderline($tupla[1])."</a></td>";
+                    $linkHref = $this->buscaUriBase()."keyword/".$this->poeUnderline($tupla[1]);                    
+                    echo "</td><td><a href='$linkHref' target='_blank' />".$linkHref."</a></td>";
             ?>
 					<td class="center">
 					   <a class="btn btn-info" href="?a=<?php echo $this->acaoAtiva;?>&k=<?php echo $tupla[0];?>&t=t1">
@@ -114,6 +115,7 @@ class Palavra extends Diversa{
     private function form($k)
     {
         $titulo = "Incluir novo registro";
+        
         if($k)
         {
             $tupla  = $this->lerTupla($k);
@@ -148,60 +150,155 @@ class Palavra extends Diversa{
                     </div>
                 </div>
                 <br/><h5>OFEREÇA MAIS DETALHES PARA ESTA PALAVRA-CHAVE:</h5><br/>
+                
                 <div class="control-group">
                     <label class="control-label" for="alternativoPalavra" style="<?php echo $estilo;?>">Nome alternativo:</label>
-                    <div class="controls">
-                        <input autofocus="autofocus" type="text" name="alternativoPalavra" style="width: 200px;" maxlength="50" class="span6" id="alternativoPalavra" value="<?php echo $tupla['alternativoPalavra'];?>" />
+                    <div class="controls" style="float: left; margin-left: 2px; margin-right: 10px;">
+                        <?php
+                            $retornoJaTem = $this->consultaSql("SELECT idPalavra, textoPalavra, idRdfPalavra FROM $this->tabela WHERE idPalavra NOT LIKE $k ORDER BY textoPalavra"); 
+                        ?>
+                        <select name="jaTemAlternativo">
+                            <option value="0" selected="selected">Selecione existente</option>
+                            <?php
+                                mysql_data_seek($retornoJaTem,0);
+                                while($jaTem = mysql_fetch_array($retornoJaTem))
+                                {
+                                    if(intval($tupla['alternativoPalavra'])==$jaTem[2])
+                                    {
+                                        echo "<option value='$jaTem[2]' selected='selected'>$jaTem[1]</option>";
+                                        $tupla['alternativoPalavra'] = "";                                        
+                                    }else{
+                                        if($jaTem[1]==$tupla['alternativoPalavra'])
+                                        {
+                                            echo "<option value='$jaTem[2]' selected='selected'>$jaTem[1]</option>";
+                                        }else{
+                                            echo "<option value='$jaTem[2]'>$jaTem[1]</option>";                                            
+                                        }                                        
+                                    }
+                                }
+                            ?>                            
+                        </select>
+                    </div>
+                    <div class="controls" style="float: left;margin: 0px 2px 0px 2px; padding-top: 5px;">
+                        ou informe um novo termo:
+                    </div> 
+                    <div class="controls" style="float: left; margin-left: 2px;">
+                        <input autofocus="autofocus" type="text" name="alternativoPalavra" style="width: 200px; margin: 0px;" maxlength="50" class="span6" id="alternativoPalavra" value="<?php echo $tupla['alternativoPalavra'];?>" />
                     </div>
                 </div>
+                
                 <div class="control-group">
                     <label class="control-label" for="amploPalavra" style="<?php echo $estilo;?>">Conceito mais amplo:</label>
-                    <div class="controls">
+                    <div class="controls" style="float: left; margin-left: 2px; margin-right: 10px;">                        
+                        <select name="jaTemAmplo">
+                            <option value="0" selected="selected">Selecione existente</option>
+                            <?php
+                                mysql_data_seek($retornoJaTem,0);
+                                while($jaTem = mysql_fetch_array($retornoJaTem))
+                                {
+                                    if(intval($tupla['amploPalavra'])==$jaTem[2])
+                                    {
+                                        echo "<option value='$jaTem[2]' selected='selected'>$jaTem[1]</option>";
+                                        $tupla['amploPalavra'] = "";                                        
+                                    }else{
+                                        if($jaTem[1]==$tupla['amploPalavra'])
+                                        {
+                                            echo "<option value='$jaTem[2]' selected='selected'>$jaTem[1]</option>";
+                                        }else{
+                                            echo "<option value='$jaTem[2]'>$jaTem[1]</option>";                                            
+                                        }
+                                    }
+                                }
+                            ?>                            
+                        </select>
+                    </div>
+                    <div class="controls" style="float: left;margin: 0px 2px 0px 2px; padding-top: 5px;">
+                        ou informe um novo termo:
+                    </div> 
+                    <div class="controls" style="float: left; margin-left: 2px;">
                         <input autofocus="autofocus" type="text" name="amploPalavra" style="width: 200px;" maxlength="50" class="span6" id="amploPalavra" value="<?php echo $tupla['amploPalavra'];?>" />
                     </div>
                 </div>
-                <!--
-                Retirado a pedido do Mark, só vai resolver com a versão nova
-                
+                <?php
+                /*
                 <div class="control-group">
                     <label class="control-label" for="especificoPalavra" style="<?php echo $estilo;?>">Conceito mais específico:</label>
-                    <div class="controls">
+                    <div class="controls" style="float: left; margin-left: 2px; margin-right: 10px;">                        
+                        <select name="jaTemEspecifico">
+                            <option value="0" selected="selected">Selecione existente</option>
+                            <?php
+                                mysql_data_seek($retornoJaTem,0);
+                                while($jaTem = mysql_fetch_array($retornoJaTem))
+                                {
+                                    if(intval($tupla['especificoPalavra'])==$jaTem[2])
+                                    {
+                                        echo "<option value='$jaTem[2]' selected='selected'>$jaTem[1]</option>";
+                                        $tupla['especificoPalavra'] = "";                                        
+                                    }else{
+                                        if($jaTem[1]==$tupla['especificoPalavra'])
+                                        {
+                                            echo "<option value='$jaTem[2]' selected='selected'>$jaTem[1]</option>";
+                                        }else{
+                                            echo "<option value='$jaTem[2]'>$jaTem[1]</option>";                                            
+                                        }
+                                    }
+                                }
+                            ?>                            
+                        </select>
+                    </div>
+                    <div class="controls" style="float: left;margin: 0px 2px 0px 2px; padding-top: 5px;">
+                        ou informe um novo termo:
+                    </div> 
+                    <div class="controls" style="float: left; margin-left: 2px;">
                         <input autofocus="autofocus" type="text" name="especificoPalavra" style="width: 200px;" maxlength="50" class="span6" id="especificoPalavra" value="<?php echo $tupla['especificoPalavra'];?>" />
                     </div>
                 </div>
-                -->
+                */
+                ?>
                 <div class="control-group">
                     <label class="control-label" for="relacionadoPalavra" style="<?php echo $estilo;?>">Conceito relacionado:</label>
-                    <div class="controls">
+                    <div class="controls" style="float: left; margin-left: 2px; margin-right: 10px;">                        
+                        <select name="jaTemRelacionado">
+                            <option value="0" selected="selected">Selecione existente</option>
+                            <?php
+                                mysql_data_seek($retornoJaTem,0);
+                                while($jaTem = mysql_fetch_array($retornoJaTem))
+                                {
+                                    if(intval($tupla['relacionadoPalavra'])==$jaTem[2])
+                                    {
+                                        echo "<option value='$jaTem[2]' selected='selected'>$jaTem[1]</option>";
+                                        $tupla['relacionadoPalavra'] = "";                                        
+                                    }else{
+                                        if($jaTem[1]==$tupla['relacionadoPalavra'])
+                                        {
+                                            echo "<option value='$jaTem[2]' selected='selected'>$jaTem[1]</option>";
+                                        }else{
+                                            echo "<option value='$jaTem[2]'>$jaTem[1]</option>";                                            
+                                        }
+                                    }
+                                }
+                            ?>                            
+                        </select>
+                    </div>
+                    <div class="controls" style="float: left;margin: 0px 2px 0px 2px; padding-top: 5px;">
+                        ou informe um novo termo:
+                    </div> 
+                    <div class="controls" style="float: left; margin-left: 2px;">
                         <input autofocus="autofocus" type="text" name="relacionadoPalavra" style="width: 200px;" maxlength="50" class="span6" id="relacionadoPalavra" value="<?php echo $tupla['relacionadoPalavra'];?>" />
                     </div>
                 </div>
                 <br/>
-                <div class="control-group">
-					<label class="control-label" style="<?php echo $estilo;?>">Permitir busca na Dbpedia:</label>
-					<div class="controls">
-					  <label class="radio">
-                        <?php
-                            $checked = "";
-                            if($tupla['resourcePalavra']=='N')
-                            {
-                                $checked = "checked='checked'";
-                            }
-                        ?>
-						<input type="radio" name="permitirDbpedia" id="permitirDbpedia1" value="S" <?php echo $checked;?>/>
-						SIM
-					  </label>
-					  <div style="clear:both"></div>
-					  <label class="radio" style="margin-left: 20px;">
-                        <?php
-                            $checked = "";
-                            if($tupla['resourcePalavra']=='S')
-                            {
-                                $checked = "checked='checked'";
-                            }
-                        ?>
-						<input type="radio" name="permitirDbpedia" id="permitirDbpedia2" value="N" <?php echo $checked;?>/>
-						NÃO
+                <?php
+                    if($k)
+                    {
+                ?>
+                    <div class="control-group">
+    				    <label class="control-label" style="<?php echo $estilo;?>">Permitir busca na Dbpedia:</label>
+                        <div class="controls">
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="temDbpedia" id="inlineCheckbox1" value="N" /> Marque para habilitar a consulta a dados na Dbpedia
+                            </label>
+                        </div>
                         <?php
                             $rStatements = $this->consultaSql("SELECT object FROM statements WHERE modelID='".$tupla['idRdfPalavra']."' AND predicate='http://www.w3.org/2000/01/rdf-schema#seeAlso'");
                             if(mysql_num_rows($rStatements))
@@ -211,9 +308,10 @@ class Palavra extends Diversa{
                                 echo "Já possui o recurso <a href='".$tStatements['object']."' target=_blank>".$tStatements['object']."</a>";                                 
                             }
                         ?>
-					  </label>
-					</div>
-				</div>                
+    				</div> 
+                <?php
+                    }
+                ?>               
                 <div class="form-actions">
                     <button type="button" class="btn" onclick="mudaPagina('?a=<?php echo $this->acaoAtiva;?>')"> Cancelar </button>
                     &nbsp;&nbsp;&nbsp;&nbsp;
@@ -257,6 +355,7 @@ class Palavra extends Diversa{
             $consulta   = $this->poeUnderline($tupla['textoPalavra']);
             $consulta   = $this->converterUtf8Hex($consulta);
             //consulta sparql
+            
             $sparql = "
             PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
             SELECT ?d
@@ -267,6 +366,11 @@ class Palavra extends Diversa{
                 FILTER(langMatches(lang(?c), 'PT') && langMatches(lang(?d), 'PT'))
             }";            
             //execultando a consulta
+            //echo "<pre>";
+            //var_dump(htmlentities($sparql));
+            //echo "</pre>";
+            
+            
     	    $result = sparql_query($sparql);
             
             if(!$result)
@@ -356,6 +460,16 @@ class Palavra extends Diversa{
             $especificoPalavra  = $this->pegaPost('especificoPalavra');
             $relacionadoPalavra = $this->pegaPost('relacionadoPalavra');
             $idRdfPalavra       = $_POST['idRdfPalavra'];
+            $temDbpedia         = $_POST['temDbpedia'];
+            if($temDbpedia!="N")
+            {
+                $temDbpedia = "S";
+            }
+            
+            $jaTemAlternativo   = $_POST['jaTemAlternativo'];
+            $jaTemAmplo         = $_POST['jaTemAmplo'];
+            $jaTemEspecifico    = $_POST['jaTemEspecifico'];
+            $jaTemRelacionado   = $_POST['jaTemRelacionado'];            
 
             $uriPalavra   = $this->buscaUriBase()."keyword/".$this->poeUnderline($textoPalavra);
 
@@ -379,21 +493,57 @@ class Palavra extends Diversa{
                 $statement[] = new Statement(new Resource($uriPalavra), RDF::TYPE(), $Concept);
                 $statement[] = new Statement(new Resource($uriPalavra), $prefLabel, new Literal($textoPalavra,'PT'));
                 $statement[] = new Statement(new Resource($uriPalavra), $definition, new Literal($definicaoPalavra,'PT'));
-                if($alternativoPalavra!="")
+                
+                if($jaTemAlternativo)
                 {
-                    $statement[] = new Statement(new Resource($uriPalavra), $altLabel, new Literal($alternativoPalavra,'PT'));
+                    $retornoJaTem       = mysql_query("SELECT modelURI FROM models WHERE modelID='$jaTemAlternativo'");
+                    $uriJaTem           = mysql_fetch_assoc($retornoJaTem);
+                    $statement[]        = new Statement(new Resource($uriPalavra), $altLabel, new Resource($uriJaTem['modelURI']));
+                    $alternativoPalavra = $jaTemAlternativo;                    
+                }else{
+                    if($alternativoPalavra!="")
+                    {
+                        $statement[] = new Statement(new Resource($uriPalavra), $altLabel, new Literal($alternativoPalavra,'PT'));
+                    }                    
                 }
-                if($amploPalavra!="")
+                
+                if($jaTemAmplo)
                 {
-                    $statement[] = new Statement(new Resource($uriPalavra), $broader, new Literal($amploPalavra,'PT'));
+                    $retornoJaTem = mysql_query("SELECT modelURI FROM models WHERE modelID='$jaTemAmplo'");
+                    $uriJaTem     = mysql_fetch_assoc($retornoJaTem);
+                    $statement[]  = new Statement(new Resource($uriPalavra), $broader, new Resource($uriJaTem['modelURI']));
+                    $amploPalavra = $jaTemAmplo;                    
+                }else{
+                    if($amploPalavra!="")
+                    {
+                        $statement[] = new Statement(new Resource($uriPalavra), $broader, new Literal($amploPalavra,'PT'));
+                    }
                 }
-                if($especificoPalavra!="")
+                
+                if($jaTemEspecifico)
                 {
-                    $statement[] = new Statement(new Resource($uriPalavra), $narrower, new Literal($especificoPalavra,'PT'));
+                    $retornoJaTem      = mysql_query("SELECT modelURI FROM models WHERE modelID='$jaTemEspecifico'");
+                    $uriJaTem          = mysql_fetch_assoc($retornoJaTem);
+                    $statement[]       = new Statement(new Resource($uriPalavra), $narrower, new Resource($uriJaTem['modelURI']));
+                    $especificoPalavra = $jaTemEspecifico;
+                }else{                    
+                    if($especificoPalavra!="")
+                    {
+                        $statement[] = new Statement(new Resource($uriPalavra), $narrower, new Literal($especificoPalavra,'PT'));
+                    }
                 }
-                if($relacionadoPalavra!="")
+                
+                if($jaTemRelacionado)
                 {
-                    $statement[] = new Statement(new Resource($uriPalavra), $related, new Literal($relacionadoPalavra,'PT'));
+                    $retornoJaTem       = mysql_query("SELECT modelURI FROM models WHERE modelID='$jaTemRelacionado'");
+                    $uriJaTem           = mysql_fetch_assoc($retornoJaTem);
+                    $statement[]        = new Statement(new Resource($uriPalavra), $related, new Resource($uriJaTem['modelURI']));
+                    $relacionadoPalavra = $jaTemRelacionado;
+                }else{
+                    if($relacionadoPalavra!="")
+                    {
+                        $statement[] = new Statement(new Resource($uriPalavra), $related, new Literal($relacionadoPalavra,'PT'));
+                    }
                 }
 
                 $model       = ModelFactory::getDefaultModel();
@@ -409,34 +559,68 @@ class Palavra extends Diversa{
 
                 $retorno = $this->consultaSql("SELECT modelID FROM models WHERE modelURI='$uriPalavra'");
                 $qmodel  = mysql_fetch_assoc($retorno);
-                mysql_query("UPDATE $this->tabela SET idRdfPalavra='".$qmodel['modelID']."' WHERE $this->pk='".$esteRegistro[$this->pk]."'");
+                mysql_query("UPDATE $this->tabela SET idRdfPalavra='".$qmodel['modelID']."', alternativoPalavra='$alternativoPalavra', amploPalavra='$amploPalavra', especificoPalavra='$especificoPalavra', relacionadoPalavra='$relacionadoPalavra' WHERE $this->pk='".$esteRegistro[$this->pk]."'");
 
             }else{
 
                 mysql_query("DELETE FROM models WHERE modelID='$idRdfPalavra'");
                 mysql_query("DELETE FROM statements WHERE modelID='$idRdfPalavra'");
 
-                mysql_query("UPDATE $this->tabela SET textoPalavra='$textoPalavra', definicaoPalavra='$definicaoPalavra', alternativoPalavra='$alternativoPalavra', amploPalavra='$amploPalavra', especificoPalavra='$especificoPalavra', relacionadoPalavra='$relacionadoPalavra' WHERE $this->pk='$chave'");
-
                 // INÍCIO DA GRAVAÇÃO DAS TRIPLAS
                 $statement[] = new Statement(new Resource($uriPalavra), RDF::TYPE(), $Concept);
                 $statement[] = new Statement(new Resource($uriPalavra), $prefLabel, new Literal($textoPalavra,'PT'));
                 $statement[] = new Statement(new Resource($uriPalavra), $definition, new Literal($definicaoPalavra,'PT'));
-                if($alternativoPalavra!="")
+              
+                if($jaTemAlternativo)
                 {
-                    $statement[] = new Statement(new Resource($uriPalavra), $altLabel, new Literal($alternativoPalavra,'PT'));
+                    $retornoJaTem = mysql_query("SELECT modelURI FROM models WHERE modelID='$jaTemAlternativo'");
+                    $uriJaTem     = mysql_fetch_assoc($retornoJaTem);
+                    $statement[]  = new Statement(new Resource($uriPalavra), $altLabel, new Resource($uriJaTem['modelURI']));
+                    $alternativoPalavra = $jaTemAlternativo;
+                }else{
+                    if($alternativoPalavra!="")
+                    {
+                        $statement[] = new Statement(new Resource($uriPalavra), $altLabel, new Literal($alternativoPalavra,'PT'));
+                    }                    
                 }
-                if($amploPalavra!="")
+                
+                if($jaTemAmplo)
                 {
-                    $statement[] = new Statement(new Resource($uriPalavra), $broader, new Literal($amploPalavra,'PT'));
+                    $retornoJaTem = mysql_query("SELECT modelURI FROM models WHERE modelID='$jaTemAmplo'");
+                    $uriJaTem     = mysql_fetch_assoc($retornoJaTem);
+                    $statement[]  = new Statement(new Resource($uriPalavra), $broader, new Resource($uriJaTem['modelURI']));
+                    $amploPalavra = $jaTemAmplo;                    
+                }else{
+                    if($amploPalavra!="")
+                    {
+                        $statement[] = new Statement(new Resource($uriPalavra), $broader, new Literal($amploPalavra,'PT'));
+                    }
                 }
-                if($especificoPalavra!="")
+                
+                if($jaTemEspecifico)
                 {
-                    $statement[] = new Statement(new Resource($uriPalavra), $narrower, new Literal($especificoPalavra,'PT'));
+                    $retornoJaTem = mysql_query("SELECT modelURI FROM models WHERE modelID='$jaTemEspecifico'");
+                    $uriJaTem     = mysql_fetch_assoc($retornoJaTem);
+                    $statement[]  = new Statement(new Resource($uriPalavra), $narrower, new Resource($uriJaTem['modelURI']));
+                    $especificoPalavra = $jaTemEspecifico;
+                }else{                    
+                    if($especificoPalavra!="")
+                    {
+                        $statement[] = new Statement(new Resource($uriPalavra), $narrower, new Literal($especificoPalavra,'PT'));
+                    }
                 }
-                if($relacionadoPalavra!="")
+                
+                if($jaTemRelacionado)
                 {
-                    $statement[] = new Statement(new Resource($uriPalavra), $related, new Literal($relacionadoPalavra,'PT'));
+                    $retornoJaTem = mysql_query("SELECT modelURI FROM models WHERE modelID='$jaTemRelacionado'");
+                    $uriJaTem     = mysql_fetch_assoc($retornoJaTem);
+                    $statement[]  = new Statement(new Resource($uriPalavra), $related, new Resource($uriJaTem['modelURI']));
+                    $relacionadoPalavra = $jaTemRelacionado;
+                }else{
+                    if($relacionadoPalavra!="")
+                    {
+                        $statement[] = new Statement(new Resource($uriPalavra), $related, new Literal($relacionadoPalavra,'PT'));
+                    }
                 }
 
                 $model       = ModelFactory::getDefaultModel();
@@ -447,6 +631,8 @@ class Palavra extends Diversa{
                 $mysql_database = ModelFactory::getDbStore();
                 $mysql_database->putModel($model,$uriPalavra);
                 // FIM DA GRAÇÃO DAS TRIPLAS
+                
+                mysql_query("UPDATE $this->tabela SET textoPalavra='$textoPalavra', definicaoPalavra='$definicaoPalavra', alternativoPalavra='$alternativoPalavra', amploPalavra='$amploPalavra', especificoPalavra='$especificoPalavra', relacionadoPalavra='$relacionadoPalavra', resourcePalavra='$temDbpedia' WHERE $this->pk='$chave'");
 
                 $retorno = $this->consultaSql("SELECT modelID FROM models WHERE modelURI='$uriPalavra'");
                 $qmodel  = mysql_fetch_assoc($retorno);
@@ -514,22 +700,55 @@ class Palavra extends Diversa{
         echo "<h2>".strtoupper($palavra['textoPalavra'])."</h2>";
         echo "<p>".$this->buscaUriBase()."keyword/".$this->poeUnderline($palavra['textoPalavra'])."</p>";
         echo "<p>Definição: ".$palavra['definicaoPalavra']."</p><ul>";
-        if($palavra['alternativoPalavra']!="")
+        
+        if(intval($palavra['alternativoPalavra']))
         {
-            echo "<li>Nome alternativo: ".$palavra['alternativoPalavra']."</li>";
+            $retornoRecurso = mysql_query("SELECT modelURI FROM models WHERE modelID='".intval($palavra['alternativoPalavra'])."'");
+            $uriRecurso     = mysql_fetch_assoc($retornoRecurso);
+            echo "<li>Nome alternativo: <a href='".$uriRecurso['modelURI']."' target='_blank'>".$uriRecurso['modelURI']."</a></li>";
+        }else{
+            if($palavra['alternativoPalavra']!="")
+            {
+                echo "<li>Nome alternativo: ".$palavra['alternativoPalavra']."</li>";
+            }
         }
-        if($palavra['amploPalavra']!="")
+        
+        if(intval($palavra['amploPalavra']))
         {
-            echo "<li>Conceito mais amplo: ".$palavra['amploPalavra']."</li>";
+            $retornoRecurso = mysql_query("SELECT modelURI FROM models WHERE modelID='".intval($palavra['amploPalavra'])."'");
+            $uriRecurso     = mysql_fetch_assoc($retornoRecurso);
+            echo "<li>Conceito mais amplo: <a href='".$uriRecurso['modelURI']."' target='_blank'>".$uriRecurso['modelURI']."</a></li>";
+        }else{
+            if($palavra['amploPalavra']!="")
+            {
+                echo "<li>Conceito mais amplo: ".$palavra['amploPalavra']."</li>";
+            }
         }
-        if($palavra['especificoPalavra']!="")
+        
+        if(intval($palavra['especificoPalavra']))
         {
-            echo "<li>Conceito mais específico: ".$palavra['especificoPalavra']."</li>";
+            $retornoRecurso = mysql_query("SELECT modelURI FROM models WHERE modelID='".intval($palavra['especificoPalavra'])."'");
+            $uriRecurso     = mysql_fetch_assoc($retornoRecurso);
+            echo "<li>Conceito mais específico: <a href='".$uriRecurso['modelURI']."' target='_blank'>".$uriRecurso['modelURI']."</a></li>";
+        }else{
+            if($palavra['especificoPalavra']!="")
+            {
+                echo "<li>Conceito mais específico: ".$palavra['especificoPalavra']."</li>";
+            }
         }
-        if($palavra['relacionadoPalavra']!="")
+        
+        if(intval($palavra['relacionadoPalavra']))
         {
-            echo "<li>Conceito relacionado: ".$palavra['relacionadoPalavra']."</li>";
+            $retornoRecurso = mysql_query("SELECT modelURI FROM models WHERE modelID='".intval($palavra['relacionadoPalavra'])."'");
+            $uriRecurso     = mysql_fetch_assoc($retornoRecurso);
+            echo "<li>Conceito relacionado: <a href='".$uriRecurso['modelURI']."' target='_blank'>".$uriRecurso['modelURI']."</a></li>";
+        }else{
+            if($palavra['relacionadoPalavra']!="")
+            {
+                echo "<li>Conceito relacionado: ".$palavra['relacionadoPalavra']."</li>";
+            }                
         }
+        
 
         echo "</ul>";
         
@@ -546,9 +765,13 @@ class Palavra extends Diversa{
         }
         echo "<hr/>";
         $uri1 = $_SERVER['REQUEST_URI'];
+        //echo "<pre>";
+        //var_dump($_SERVER['REQUEST_URI']);
+        //echo "</pre>";
+        
 	    $uri1 = str_replace("/page/","/data/",$uri1);
         $uri1 = str_replace($p,$this->poeUnderline($this->converterUtf8Hex($palavra['textoPalavra'])),$uri1);
-
+        //echo $uri1;
         echo "<p><a href='$uri1' title='Obter arquivo RDF'><img border='0' src='http://www.w3.org/RDF/icons/rdf_w3c_button.32' alt='RDF Resource Description Framework Icon' /></a></p>";
     }
 
