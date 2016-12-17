@@ -4,14 +4,8 @@ abstract class Banco
 {
    function __construct()
    {
-        //@mysql_connect("localhost","niltonfj_user","niltonfj_pass") or die($this->erroSql("Não foi possível CONECTAR ao banco de dados."));
-        //@mysql_select_db("niltonfj_db1") or die($this->erroSql("Não foi possível ACESSAR o banco de dados."));
-
-        // $dbh = mysql_connect ("localhost", "niltonfj_user", "niltonfj_pass") or die ('Não foi possivel se conectar: ' . mysql_error());
-        // mysql_select_db ("niltonfj_db1");
-
         @mysql_connect("localhost","root");
-        @mysql_select_db("projetows") or die($this->erroSql("Não foi possível acessar o banco de dados."));
+        @mysql_select_db("projetows") or die($this->erroSql("NÃ£o foi possÃ­vel acessar o banco de dados."));
    }
 
 
@@ -72,9 +66,9 @@ abstract class Banco
             $tempQuery .= "predicate = '".$prop[0]."' AND object LIKE '".$filtro[0]."' ";
         }else{
             /*
-                se veio com mais de uma propriedade, então eu tenho que achar o mesmo model
-                para todas essas propriedades, só assim eu vou pegar o registro correto.
-                Então vou ter que consultar esse model antes pra colocar ele na nova query
+                se veio com mais de uma propriedade, entÃ£o eu tenho que achar o mesmo model
+                para todas essas propriedades, sÃ³ assim eu vou pegar o registro correto.
+                EntÃ£o vou ter que consultar esse model antes pra colocar ele na nova query
             */
             
             $queryParaPegarModel = $tempQuery .= "predicate = '".$prop[0]."' AND object LIKE '%".$filtro[0]."%' ";
@@ -133,7 +127,7 @@ abstract class Banco
             }
             if(!$peloMenosUm)
             {
-                $this->alertaAtencao("NÃO FORAM ENCONTRAS PUBLICAÇÕES RELACIONADAS");
+                $this->alertaAtencao("NÃƒO FORAM ENCONTRAS PUBLICAÃ‡Ã•ES RELACIONADAS");
                 return false;               
             }
             return true;
@@ -143,7 +137,7 @@ abstract class Banco
         $quantos = mysql_num_rows($retorno);
         if(!$quantos)
         {
-            $this->alertaAtencao("NÃO FORAM ENCONTRAS PUBLICAÇÕES RELACIONADAS");
+            $this->alertaAtencao("NÃƒO FORAM ENCONTRAS PUBLICAÃ‡Ã•ES RELACIONADAS");
             return false;
         }
         echo "<h3>RESULTADOS:</h3><br/>";
@@ -178,7 +172,7 @@ abstract class Banco
         }
         if(!$achouUm)
         {
-            $this->alertaAtencao("NÃO FORAM ENCONTRAS PUBLICAÇÕES RELACIONADAS");
+            $this->alertaAtencao("NÃƒO FORAM ENCONTRAS PUBLICAÃ‡Ã•ES RELACIONADAS");
             return false;
         }
         return true;
